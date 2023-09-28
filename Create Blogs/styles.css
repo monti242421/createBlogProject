@@ -17,13 +17,13 @@
   .blogs{
     position: relative;
     width: 600px;
-    height: auto;
     right: 0px;
+    height: auto;
     background-color: rgb(0, 0, 0);
   }
   .btn-right{
     position: relative;
-    left: 500px;
+    left: 400px;
     margin-bottom: 5px;
   }
   .content{
