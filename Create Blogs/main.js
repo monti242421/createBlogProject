@@ -8,7 +8,7 @@ var commentsdivEle;
 form.addEventListener('submit',postcontent);
 blogscontainer.addEventListener('click',openBlog);
 
-function postcontent(e){
+async function  postcontent(e){
     e.preventDefault();
     title = document.getElementById("title").value;
     author = document.getElementById("author").value;
@@ -19,14 +19,15 @@ function postcontent(e){
         author: author,
         content: content
     };
-    axios.post("http://localhost:4000/createblog",myobj)
-    .then(res=>{
+    try{
+
+    var res = await axios.post("http://localhost:4000/createblog",myobj)
         console.log(res);
-        showDataToScreen(res.data.newBlogDetail)            
-    })
-    .catch(err=>{
-        console.log(err)
-    });
+        showDataToScreen(res.data.newBlogDetail)   
+    }         
+    catch(err){
+          console.log(err)
+    };
  
 
     
@@ -111,33 +112,38 @@ function showcomments(id,comment,commentid){
     commentsdiv.appendChild(li);
 }
 
-window.addEventListener("DOMContentLoaded",()=>{
-    axios.get("http://localhost:4000/createblog")
-    .then((res)=>{
-        console.log(res.data)
-        for( var i=0;i<res.data.length;i++){
-            showDataToScreen(res.data[i]);
-        }
-    
-    }).catch(err=>console.log(err));
+window.addEventListener("DOMContentLoaded",async ()=>{
+    try{
 
-    axios.get("http://localhost:4000/createblog/comments")
-    .then((res)=>{
-        console.log(res.data)
-        for( var i=0;i<res.data.length;i++){
-            showcomments(res.data[i].createblogId,res.data[i].COMMENTS,res.data[i].id);
+       var blog = await axios.get("http://localhost:4000/createblog")
+        console.log(blog.data)
+        for( var i=0;i<blog.data.length;i++){
+            showDataToScreen(blog.data[i]);
         }
     
-    }).catch(err=>console.log(err));
+    }catch(err){
+        console.log(err);
+    }
+    
+    try{
+        var comment = await axios.get("http://localhost:4000/createblog/comments");
+        console.log(comment.data)
+        for( var i=0;i<comment.data.length;i++){
+            showcomments(comment.data[i].createblogId,comment.data[i].COMMENTS,comment.data[i].id);
+        }
+
+    }catch(err){
+        console.log(err);
+    }
+
 
 
 })
 
 
-function openBlog(e){
+async function openBlog(e){
     e.preventDefault()
     if(e.target.id=="showblog"){       
-        //showBlog(blogsdivEle,author,content); 
         var id = e.target.parentElement.parentElement.id;  
         var contentDiv = document.getElementById("divcontent"+id);
         console.log(contentDiv.getAttribute("hidden"))
@@ -157,21 +163,23 @@ function openBlog(e){
             blogid:id
         }
         
-
-        axios.post("http://localhost:4000/createblog/comments",myobj)
-        .then(result=>{
-            var commentid = result.data.newBlogCommentsDetail.id;
+        try {
+            var commentres = await axios.post("http://localhost:4000/createblog/comments",myobj)
+            var commentid = commentres.data.newBlogCommentsDetail.id;
             showcomments(id,comment,commentid);
-        })
-        .catch(err=>{console.log(err)});
+        }catch(err){
+            console.log(err);
+        }
         
     }
     if(e.target.id=="delete"){
         var li = e.target.parentElement;
-        axios.delete("http://localhost:4000/createblog/comments/"+li.id)
-        .then((res)=>{
+        try{
+            var deleteres = await axios.delete("http://localhost:4000/createblog/comments/"+li.id);
             li.remove();
-        }).catch(err=>console.log(err));
+        }catch(err){
+            console.log(err);
+        }
         
     }
 }

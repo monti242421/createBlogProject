@@ -30,6 +30,6 @@ app.use(createblogRoute);
 
 //sequelizeUser.sync()
 //sequelizeExpense.sync();
-sequelize.sync({force:true});
-//sequelize.sync();
+//sequelize.sync({force:true});
+sequelize.sync();
 app.listen(4000);
